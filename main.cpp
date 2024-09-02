@@ -55,7 +55,7 @@ struct DBSearcher {
         return op1.cur == op2.cur && (op1.end + 1 == op2.start || op2.end + 1 == op1.start);
     }
 
-    std::pair<NodePtr, NodePtr> combine(const NodePtr& node1, const NodePtr& node2, const size_t& level) {
+    std::pair<NodePtr, NodePtr> combine(const NodePtr node1, const NodePtr node2, size_t level) {
         auto[char1, char2] = convert_double_letter(node1->op.cur);
         std::pair<NodePtr, NodePtr> result;
         result.first = make_node(Node::Type::Combination, Node::Operation{
@@ -76,10 +76,10 @@ struct DBSearcher {
     void combination_stage(const size_t level) {
         assert(nodes.size() > 1);
         for (size_t i = nodes.size()-1; i >= 1; i--) {
-            const NodePtr& node = nodes[i];
+            NodePtr node = nodes[i];
             if (node->type == Node::Type::Dependency && node->level + 1 == level) {
                 for (size_t j = 0; j < i ; j++) {
-                    const NodePtr& that = nodes[j];
+                    NodePtr that = nodes[j];
                     if (that->type == Node::Type::Dependency && combinable(node->op, that->op)) {
                         auto[child1, child2] = combine(node, that, level);
                         LOG_NODE(*child1);
@@ -186,7 +186,7 @@ struct DBSearcher {
 
 
 int main() {
-    const char* state = "aaccadd";
+    const char* state = "aaccaddabbcdd";
     printf("%s\n", state);
     DBSearcher searcher(state);
     searcher.search();
